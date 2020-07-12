@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "236637941150",
+    "firebase_url": "https://gbridge-signup-671ab.firebaseio.com",
+    "project_id": "gbridge-signup-671ab",
+    "storage_bucket": "gbridge-signup-671ab.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:236637941150:android:49a83adbf90c1c69e0fa8f",
+        "android_client_info": {
+          "package_name": "com.example.mymy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "236637941150-9mao8gjk6705qrbevsmk04996p0994vq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQV6TF9Pv70ukYzBmEh7qj0mWm7Pv0IPI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "236637941150-9mao8gjk6705qrbevsmk04996p0994vq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
