@@ -1,6 +1,7 @@
 package com.example.mymy;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -10,13 +11,16 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
-import com.facebook.login.LoginManager;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {
 
     private ViewPager mViewPager;
+
+    private BackPressCloseHandler backPressCloseHandler;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -28,6 +32,7 @@ public class HomeActivity extends AppCompatActivity {
 //        setSupportActionBar(toolbar);
 
         mViewPager = (ViewPager)findViewById(R.id.container);
+        backPressCloseHandler = new BackPressCloseHandler(this);
 
 //        FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener(){
@@ -73,26 +78,28 @@ public class HomeActivity extends AppCompatActivity {
     class FABClickListener implements View.OnClickListener{
         @Override
         public void onClick(View v) {
-            if(MainActivity.callbackManager != null) {
+//            if(MainActivity.callbackManager != null) {
+//                new AlertDialog.Builder(HomeActivity.this).setTitle("로그아웃").setMessage("로그아웃 하시겠습니까?").setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//
+//                        Toast.makeText(HomeActivity.this,"로그아웃 되셨습니다", Toast.LENGTH_SHORT).show();
+//                        LoginManager.getInstance().logOut();
+//                        finish();
+//                    }
+//                }).setNegativeButton("NO", null).setIcon(android.R.drawable.ic_dialog_alert).show();
+//            }else{
                 new AlertDialog.Builder(HomeActivity.this).setTitle("로그아웃").setMessage("로그아웃 하시겠습니까?").setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-
-                        Toast.makeText(HomeActivity.this,"로그아웃 되셨습니다", Toast.LENGTH_SHORT).show();
-                        LoginManager.getInstance().logOut();
-                        finish();
-                    }
-                }).setNegativeButton("NO", null).setIcon(android.R.drawable.ic_dialog_alert).show();
-            }else{
-                new AlertDialog.Builder(HomeActivity.this).setTitle("로그아웃").setMessage("로그아웃 하시겠습니까?").setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
+                        FirebaseAuth.getInstance().signOut();
                         Toast.makeText(HomeActivity.this, "로그아웃 되셨습니다", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        startActivity(intent);
                         finish();
                     }
                 }).setNegativeButton("NO", null).setIcon(android.R.drawable.ic_dialog_alert).show();
-            }
+//            }
         }
     }
 
@@ -111,5 +118,12 @@ public class HomeActivity extends AppCompatActivity {
 //
 //        return super.onOptionsItemSelected(item);
 //    }
+
+
+    //뒤로가기 누를 때 실행
+    @Override
+    public void onBackPressed() {
+        backPressCloseHandler.onBackPressed();
+    }
 
 }

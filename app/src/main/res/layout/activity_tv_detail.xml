@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="프로그램 소개 및 트레일러"
         android:textColor="#ffffff"
-        android:textSize="10dp"
+        android:textSize="30dp"
         android:layout_margin="10dp"
         android:textStyle="bold"/>
     <ScrollView
@@ -75,7 +75,7 @@
                 android:textStyle="bold"
                 android:layout_marginTop="10dp"
                 android:text="비슷한 TV 프로그램"
-                android:textSize="10sp"/>
+                android:textSize="20sp"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_tvs"
                 android:layout_marginTop="20dp"

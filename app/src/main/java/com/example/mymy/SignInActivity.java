@@ -1,6 +1,8 @@
 package com.example.mymy;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,8 +14,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,11 +45,23 @@ public class SignInActivity extends AppCompatActivity implements CompoundButton.
 
     private ImageView mBackBtn;
 
+    //로그인 모듈 변수
+    private FirebaseAuth mAuth;
+
+    ProgressDialog mProgress;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
 
+        //로그인
+        mAuth = FirebaseAuth.getInstance();
+
+        mProgress = new ProgressDialog(this);
+
+        //초기 설정
         mBackBtn = findViewById(R.id.iv_sign_back);
         mBackBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,7 +74,13 @@ public class SignInActivity extends AppCompatActivity implements CompoundButton.
         mTvSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
+
+                id = mEtSignId.getText().toString();
+                pw = mEtSignPw.getText().toString();
+                ph = mEtSignPh.getText().toString();
+
+                signStart(id,pw,ph);
+//                Toast.makeText(getApplicationContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -120,7 +153,7 @@ public class SignInActivity extends AppCompatActivity implements CompoundButton.
                         if (mEtSignPw.getText().toString().length() < 8) {
                             mTvSignPw.setText("8자리 이상 입력해주세요.");
                             mTvSignPw.setTextColor(R.color.colorError);
-                        } else if (mEtSignPw.getText().toString() == null) {
+                        } else if (mEtSignPw.getText().toString().length() == 0) {
                             mTvSignPw.setText("비밀번호를 입력해주세요.");
                             mTvSignPw.setTextColor(R.color.colorError);
                         } else if (!isPw(mEtSignPw.getText().toString())) {
@@ -158,6 +191,7 @@ public class SignInActivity extends AppCompatActivity implements CompoundButton.
                     }
                 }
         );
+
     }
 
     public static boolean isEmail(String email) {
@@ -245,4 +279,49 @@ public class SignInActivity extends AppCompatActivity implements CompoundButton.
                 break;
         }
     }
+
+    //회원가입
+    public void signStart(final String id, final String pw, final String ph){
+        mProgress.setMessage("등록중입니다. 잠시만 기다려 주세요");
+        mProgress.show();
+        mAuth.createUserWithEmailAndPassword(id, pw).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                mProgress.dismiss();
+                if(!task.isSuccessful()) {
+                    try {
+                        throw task.getException();
+                    } catch(FirebaseAuthWeakPasswordException e) {
+                        Toast.makeText(SignInActivity.this,"비밀번호가 간단해요.." ,Toast.LENGTH_SHORT).show();
+                    } catch(FirebaseAuthInvalidCredentialsException e) {
+                        Toast.makeText(SignInActivity.this,"email 형식에 맞지 않습니다." ,Toast.LENGTH_SHORT).show();
+                    } catch(FirebaseAuthUserCollisionException e) {
+                        Toast.makeText(SignInActivity.this,"이미존재하는 email 입니다." ,Toast.LENGTH_SHORT).show();
+                    } catch(Exception e) {
+                        Toast.makeText(SignInActivity.this,"다시 확인해주세요.." ,Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(SignInActivity.this, "가입 성공  " ,Toast.LENGTH_SHORT).show();
+                    FirebaseUser user = mAuth.getCurrentUser();
+
+                    String uid = user.getUid();
+
+                    HashMap<Object,String> hashMap = new HashMap<>();
+
+                    hashMap.put("uid",uid);
+                    hashMap.put("email",id);
+                    hashMap.put("password",pw);
+                    hashMap.put("phone",ph);
+
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference reference = database.getReference("Users");
+                    reference.child(uid).setValue(hashMap);
+
+                    startActivity(new Intent(SignInActivity.this, MainActivity.class));
+                    finish();
+                }
+            }
+        });
+    }
+
 }

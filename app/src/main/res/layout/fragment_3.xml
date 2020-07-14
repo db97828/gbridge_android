@@ -25,15 +25,15 @@
             android:layout_height="wrap_content"
             android:paddingTop="5dp"
             android:orientation="horizontal">
+
             <ImageView
-                android:layout_width="35dp"
+                android:id="@+id/click"
+                android:layout_width="wrap_content"
                 android:layout_height="35dp"
-                android:src="@android:drawable/ic_menu_search"
                 android:layout_gravity="center"
                 android:clickable="true"
-                android:id="@+id/click"
-                android:paddingLeft="5dp">
-            </ImageView>
+                android:paddingLeft="5dp"
+                android:src="@android:drawable/ic_menu_search"></ImageView>
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
